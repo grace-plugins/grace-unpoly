@@ -1,0 +1,96 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://repo.gradle.org/gradle/libs-releases" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "org.graceframework:grace-gradle-plugin:$graceVersion"
+        classpath "org.graceframework.plugins:asset-pipeline-gradle:5.2.4"
+    }
+}
+
+group "org.graceframework.plugins"
+version "0.0.1-SNAPSHOT"
+
+apply plugin: "eclipse"
+apply plugin: "idea"
+apply plugin: "org.graceframework.grace-plugin"
+apply plugin: "asset-pipeline"
+apply plugin: "maven-publish"
+apply plugin: "org.graceframework.grace-gsp"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations {
+    developmentOnly
+}
+
+dependencies {
+    developmentOnly('org.springframework.boot:spring-boot-devtools')
+    compileOnly "io.micronaut:micronaut-inject-groovy"
+    compileOnly "org.graceframework:grace-boot"
+    console "org.graceframework:grace-console"
+    implementation "org.springframework.boot:spring-boot-starter-logging"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.boot:spring-boot-autoconfigure"
+    implementation "org.graceframework:grace-core"
+    implementation "org.graceframework:grace-plugin-gsp"
+    profile "org.graceframework.profiles:web-plugin"
+    runtimeOnly "org.graceframework.plugins:asset-pipeline-plugin:5.2.4"
+    testImplementation "io.micronaut:micronaut-inject-groovy"
+    testImplementation "org.graceframework:grace-test-support"
+    testImplementation "org.mockito:mockito-core"
+}
+
+java {
+    sourceCompatibility = '11'
+}
+
+bootRun {
+    ignoreExitValue true
+    jvmArgs(
+        '-Dspring.output.ansi.enabled=always', 
+        '-noverify', 
+        '-XX:TieredStopAtLevel=1',
+        '-Xmx1024m')
+    sourceResources sourceSets.main
+    String springProfilesActive = 'spring.profiles.active'
+    systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+}
+
+tasks.withType(GroovyCompile) {
+    configure(groovyOptions) {
+        forkOptions.jvmArgs = ['-Xmx1024m']
+    }
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
+// enable if you wish to package this plugin as a standalone application
+bootJar.enabled = false
+
+assets {
+    packagePlugin = true
+}
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            from components.java
+        }
+    }
+}
