@@ -1,65 +1,42 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url "https://repo.gradle.org/gradle/libs-releases" }
         maven { url "https://plugins.gradle.org/m2/" }
+        maven { url 'https://repo.gradle.org/gradle/libs-releases' }
     }
     dependencies {
-        classpath "org.graceframework:grace-gradle-plugin:$graceVersion"
-        classpath "org.graceframework.plugins:asset-pipeline-gradle:5.2.4"
+        classpath "io.github.gradle-nexus:publish-plugin:1.3.0"
     }
 }
 
+ext."signing.keyId" = project.hasProperty("signing.keyId") ? project.getProperty('signing.keyId') : System.getenv('SIGNING_KEY')
+ext."signing.password" = project.hasProperty("signing.password") ? project.getProperty('signing.password') : System.getenv('SIGNING_PASSPHRASE')
+ext."signing.secretKeyRingFile" = project.hasProperty("signing.secretKeyRingFile") ? project.getProperty('signing.secretKeyRingFile') : ("${System.properties['user.home']}${File.separator}.gnupg${File.separator}secring.gpg")
+ext.isReleaseVersion = !projectVersion.endsWith("SNAPSHOT")
+
+version projectVersion
 group "org.graceframework.plugins"
-version "0.0.1-SNAPSHOT"
 
 apply plugin: "eclipse"
 apply plugin: "idea"
-apply plugin: "org.graceframework.grace-plugin"
-apply plugin: "asset-pipeline"
+apply plugin: "groovy"
+apply plugin: "io.github.gradle-nexus.publish-plugin"
 apply plugin: "maven-publish"
-apply plugin: "org.graceframework.grace-gsp"
+apply plugin: "signing"
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
-configurations {
-    developmentOnly
-}
-
 dependencies {
-    developmentOnly('org.springframework.boot:spring-boot-devtools')
-    compileOnly "io.micronaut:micronaut-inject-groovy"
-    compileOnly "org.graceframework:grace-boot"
-    console "org.graceframework:grace-console"
-    implementation "org.springframework.boot:spring-boot-starter-logging"
-    implementation "org.springframework.boot:spring-boot-starter-validation"
-    implementation "org.springframework.boot:spring-boot-autoconfigure"
-    implementation "org.graceframework:grace-core"
-    implementation "org.graceframework:grace-plugin-gsp"
-    profile "org.graceframework.profiles:web-plugin"
-    runtimeOnly "org.graceframework.plugins:asset-pipeline-plugin:5.2.4"
-    testImplementation "io.micronaut:micronaut-inject-groovy"
-    testImplementation "org.graceframework:grace-test-support"
-    testImplementation "org.mockito:mockito-core"
+    compileOnly "org.springframework.boot:spring-boot-autoconfigure:2.6.6"
+    compileOnly "javax.servlet:javax.servlet-api:4.0.1"
+    compileOnly "org.graceframework:grace-core:$graceVersion"
+    compileOnly "org.graceframework:grace-web-common:$graceVersion"
 }
 
-java {
-    sourceCompatibility = '11'
-}
-
-bootRun {
-    ignoreExitValue true
-    jvmArgs(
-        '-Dspring.output.ansi.enabled=always', 
-        '-noverify', 
-        '-XX:TieredStopAtLevel=1',
-        '-Xmx1024m')
-    sourceResources sourceSets.main
-    String springProfilesActive = 'spring.profiles.active'
-    systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+tasks.withType(Sign) {
+   onlyIf { isReleaseVersion }
 }
 
 tasks.withType(GroovyCompile) {
@@ -71,17 +48,35 @@ tasks.withType(GroovyCompile) {
 tasks.withType(Test) {
     useJUnitPlatform()
 }
-// enable if you wish to package this plugin as a standalone application
-bootJar.enabled = false
 
-assets {
-    packagePlugin = true
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+    withJavadocJar()
+    withSourcesJar()
 }
 
+jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    manifest.mainAttributes(
+        "Built-By": System.properties['user.name'],
+        "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
+        "Implementation-Title": "Grace Unpoly Plugin",
+        "Implementation-Version": projectVersion,
+        "Implementation-Vendor": 'Grace Plugins')
+    enabled = true
+    archiveClassifier.set('')
+    includeEmptyDirs = false
+}
 
 publishing {
     publications {
         maven(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+
             versionMapping {
                 usage('java-api') {
                     fromResolutionOf('runtimeClasspath')
@@ -90,7 +85,54 @@ publishing {
                     fromResolutionResult()
                 }
             }
+
             from components.java
+
+            pom {
+                name = "Grace Unpoly Plugin"
+                description = "Grace Plugin for using Grace with Unpoly."
+                url = 'https://github.com/grace-plugins/grace-unpoly'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'rainboyan'
+                        name = 'Michael Yan'
+                        email = 'rain@rainboyan.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/grace-plugins/grace-unpoly.git'
+                    developerConnection = 'scm:git:ssh://github.com:grace-plugins/grace-unpoly.git'
+                    url = 'https://github.com/grace-plugins/grace-unpoly'
+                }
+            }
         }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            def ossUser = System.getenv("SONATYPE_USERNAME") ?: project.hasProperty("sonatypeOssUsername") ? project.sonatypeOssUsername : ''
+            def ossPass = System.getenv("SONATYPE_PASSWORD") ?: project.hasProperty("sonatypeOssPassword") ? project.sonatypeOssPassword : ''
+            def ossStagingProfileId = System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: project.hasProperty("sonatypeOssStagingProfileId") ? project.sonatypeOssStagingProfileId : ''
+            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            username = ossUser
+            password = ossPass
+            stagingProfileId = ossStagingProfileId
+        }
+    }
+}
+
+afterEvaluate {
+    signing {
+        required { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
+        sign publishing.publications.maven
     }
 }
