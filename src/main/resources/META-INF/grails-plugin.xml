@@ -1,0 +1,3 @@
+<plugin name='unpoly'>
+  <type>org.graceframework.plugins.unpoly.UnpolyGrailsPlugin</type>
+</plugin>
