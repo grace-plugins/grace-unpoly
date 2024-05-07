@@ -83,14 +83,26 @@ class UnpolyResponse {
         setHeaderValue(UP_EXPIRE_CACHE, expireCache)
     }
 
+    /**
+     * The server may set this response header to set a custom browser location after a fragment update.
+     * Without an X-Up-Location header Unpoly will set the browser location to the requested URL.
+     */
     void setLocation(String location) {
         setHeaderValue(UP_LOCATION, location)
     }
 
+    /**
+     * This request header contains the target selector for a successful fragment update.
+     */
     void setTarget(String target) {
         setHeaderValue(UP_TARGET, target)
     }
 
+    /**
+     * Set header value for response
+     * @param The name of header
+     * @return value
+     */
     void setHeaderValue(String name, Object value) {
         this.response.setHeader(name, (value == null) ? "" : value.toString())
     }
