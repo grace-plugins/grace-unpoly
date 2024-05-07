@@ -16,17 +16,19 @@
 package org.graceframework.plugins.unpoly;
 
 import grails.web.mime.MimeType;
+import grails.web.mime.MimeTypeProvider;
 
 /**
- * {@link MimeType} for Unpoly
+ * {@link MimeTypeProvider} for Unpoly
  *
  * @author Michael Yan
- * @since 0.0.1
+ * @since 0.2
  */
-public class UnpolyMimeType {
+public class UnpolyMimeTypeProvider implements MimeTypeProvider {
 
-    public static final String UNPOLY_FORMAT = "up";
-
-    public static final MimeType UNPOLY = new MimeType("text/html", "up");
+    @Override
+    public MimeType[] getMimeTypes() {
+        return new MimeType[] { UnpolyMimeType.UNPOLY };
+    }
 
 }

@@ -17,6 +17,7 @@ package org.graceframework.plugins.unpoly;
 
 import javax.servlet.DispatcherType;
 
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
@@ -24,6 +25,8 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import grails.web.mime.MimeTypeProvider;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Unpoly Plugin.
@@ -33,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @Configuration(proxyBeanMethods = false)
+@AutoConfigureOrder(-100)
 public class UnpolyAutoConfiguration {
 
     @Bean
@@ -43,6 +47,11 @@ public class UnpolyAutoConfiguration {
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
         registration.setOrder(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER + 100);
         return registration;
+    }
+
+    @Bean
+    public MimeTypeProvider unpolyMimeTypeProvider() {
+        return new UnpolyMimeTypeProvider();
     }
 
 }
