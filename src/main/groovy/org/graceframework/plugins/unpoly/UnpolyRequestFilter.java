@@ -49,8 +49,7 @@ public class UnpolyRequestFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return !(MimeType.ALL.getName().equals(request.getHeader(HttpHeaders.ACCEPT))
-                && HttpServletRequestExtension.isUnpoly(request));
+        return !HttpServletRequestExtension.isUnpoly(request);
     }
 
 }
