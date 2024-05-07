@@ -61,6 +61,36 @@ response.unpoly.target = '.content'
 response.unpoly.events = JsonOutput.toJson([["type": "itemDeleted"]])
 
 ```
+If you use [`respond`](https://grails.github.io/legacy-grails-doc/4.0.0/ref/Controllers/respond.html) method introduced in Grails 2.3. The `respond` method tries to produce the most appropriate response for the requested content type (JSON, XML, HTML etc.)
+
+You can [configure mime types](https://grails.github.io/legacy-grails-doc/4.0.0/guide/theWebLayer.html#contentNegotiation) for Unpoly.
+
+Update the `app/conf/application.yml`:
+
+```yml
+grails:
+    mime:
+        types:
+            up: text/html
+```
+
+For example given the show action:
+
+```groovy
+def show(Book book) {
+    respond book
+}
+```
+
+You could supply a `show.up.gsp` file to render the Unpoly:
+
+```html
+<div id="${book.id}">
+    <h1>${book.title}</h1>
+    <p>${book.description}</p>
+</div>
+```
+
 
 ## Development
 
