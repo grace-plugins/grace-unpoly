@@ -64,7 +64,7 @@ jar {
         "Implementation-Version": projectVersion,
         "Implementation-Vendor": 'Grace Plugins')
     enabled = true
-    archiveClassifier.set('')
+    archiveClassifier.set('plugin')
     includeEmptyDirs = false
 }
 
@@ -85,6 +85,10 @@ publishing {
             }
 
             from components.java
+
+            artifact source: "${project.buildDir}/classes/groovy/main/META-INF/grails-plugin.xml",
+                classifier: "plugin",
+                extension: 'xml'
 
             pom {
                 name = "Grace Unpoly Plugin"
