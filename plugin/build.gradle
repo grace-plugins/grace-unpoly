@@ -57,7 +57,6 @@ java {
 }
 
 jar {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest.mainAttributes(
         "Built-By": System.properties['user.name'],
         "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
