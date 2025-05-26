@@ -1,0 +1,7 @@
+This is a plugin for using Grace/Grails app with https://unpoly.com[Unpoly.js].
+
+==== What's Unpoly?
+
+Unpoly is an unobtrusive Javascript framework for applications that render on the server. It allows your views to do things that are not normally possible in HTML, such as having links update only fragments of a page, or opening links in modal dialogs.
+
+Unpoly can give your server-side application fast and flexible frontends that feel like a single-page application (SPA). It also preserves the resilience and simplicity of the server-side programming model.

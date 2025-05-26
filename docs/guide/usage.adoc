@@ -1,0 +1,86 @@
+Add dependency to the `build.gradle`,
+
+[source,groovy]
+----
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.graceframework.plugins:unpoly:VERSION"
+}
+----
+
+Unpoly plugin supports controller-specific `withFormat()` method,
+
+[source,groovy]
+----
+class BookController {
+
+    def list() {
+        def books = Book.list()
+
+        withFormat {
+            unpoly {
+                render(template: "book", model: [bookList: books])
+            }
+            json {
+                render books as JSON
+            }
+        }
+    }
+}
+----
+
+Also, this plugin supports extendsions for Grails Request and Response,
+
+[source,groovy]
+----
+// You can get unpoly request headers from Grails Request
+
+request.unpoly.version == request.getHeader('X-UP-Version')
+request.unpoly.target  == request.getHeader('X-UP-Target')
+
+// Check Unpoly request?
+if (request.unpoly as boolean) { // or use request.isUnpoly()
+    template = 'book-detail'
+}
+
+// You can set Unpoly response headers in Grails
+
+response.unpoly.target = '.content'
+response.unpoly.events = JsonOutput.toJson([["type": "itemDeleted"]])
+----
+
+If you use [`respond`](https://grails.github.io/legacy-grails-doc/4.0.0/ref/Controllers/respond.html) method introduced in Grails 2.3. The `respond` method tries to produce the most appropriate response for the requested content type (JSON, XML, HTML etc.)
+
+You can [configure mime types](https://grails.github.io/legacy-grails-doc/4.0.0/guide/theWebLayer.html#contentNegotiation) for Unpoly.
+
+Update the `app/conf/application.yml`:
+
+[source,yml]
+----
+grails:
+    mime:
+        types:
+            up: text/html
+----
+
+For example given the show action:
+
+[source,groovy]
+----
+def show(Book book) {
+    respond book
+}
+----
+
+You could supply a `show.up.gsp` file to render the Unpoly:
+
+[source,html]
+----
+<div id="${book.id}">
+    <h1>${book.title}</h1>
+    <p>${book.description}</p>
+</div>
+----
