@@ -19,7 +19,7 @@ import grails.plugins.*
 
 class UnpolyGrailsPlugin extends Plugin {
 
-    def version = '0.3.0-SNAPSHOT'
+    def version = '0.4.0-SNAPSHOT'
     def grailsVersion = "3.0.0 > *"
     def dependsOn = [controllers: grailsVersion]
     def observe = ['controllers']
