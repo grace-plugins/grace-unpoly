@@ -1,4 +1,4 @@
-package org.graceframework.plugins.unpoly
+package grace.demos
 
 class BootStrap {
 

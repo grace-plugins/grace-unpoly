@@ -1,9 +1,9 @@
-package org.graceframework.plugins.unpoly
+package grace.demos
 
 import grails.boot.Grails
-import grails.plugins.metadata.PluginSource
+import groovy.transform.CompileStatic
 
-@PluginSource
+@CompileStatic
 class Application {
 
     static void main(String[] args) {

@@ -1,1 +1,3 @@
-rootProject.name = 'unpoly'
+rootProject.name = 'grace-unpoly'
+
+include 'plugin'
