@@ -10,7 +10,7 @@ ext."signing.secretKeyRingFile" = project.hasProperty("signing.secretKeyRingFile
 ext.isReleaseVersion = !projectVersion.endsWith("SNAPSHOT")
 
 ext {
-    springBootVersion = '2.6.6'
+    springBootVersion = '2.7.18'
     servletVersion = '4.0.1'
 }
 
@@ -20,6 +20,7 @@ group "org.graceframework.plugins"
 apply plugin: "eclipse"
 apply plugin: "idea"
 apply plugin: "groovy"
+apply plugin: "org.graceframework.grace-plugin"
 apply plugin: "maven-publish"
 apply plugin: "signing"
 
@@ -48,15 +49,19 @@ tasks.withType(Test) {
     useJUnitPlatform()
 }
 
+tasks.withType(Jar) {
+    archiveBaseName = projectName
+}
+
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     withJavadocJar()
     withSourcesJar()
 }
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest.mainAttributes(
         "Built-By": System.properties['user.name'],
         "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
@@ -67,6 +72,9 @@ jar {
     archiveClassifier.set('plugin')
     includeEmptyDirs = false
 }
+
+bootJar.enabled = false
+bootRun.enabled = false
 
 publishing {
     publications {
@@ -111,6 +119,29 @@ publishing {
                     connection = 'scm:git:git://github.com/grace-plugins/grace-unpoly.git'
                     developerConnection = 'scm:git:ssh://github.com:grace-plugins/grace-unpoly.git'
                     url = 'https://github.com/grace-plugins/grace-unpoly'
+                }
+            }
+
+            pom.withXml {
+                def pomNode = asNode()
+
+                try {
+                    pomNode.dependencyManagement.replaceNode {}
+                } catch (Throwable e) {
+                    // ignore
+                }
+
+                // simply remove dependencies without a version
+                // version-less dependencies are handled with dependencyManagement
+                // see https://github.com/spring-gradle-plugins/dependency-management-plugin/issues/8 for more complete solutions
+                pomNode.dependencies.dependency.findAll {
+                    it.version.text().isEmpty()
+                }.each {
+                    try {
+                        it.replaceNode {}
+                    } catch (Throwable e) {
+                        // ignore
+                    }
                 }
             }
         }
