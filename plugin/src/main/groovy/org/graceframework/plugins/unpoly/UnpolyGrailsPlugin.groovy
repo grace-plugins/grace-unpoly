@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 the original author or authors.
+ * Copyright 2024-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,17 @@
  */
 package org.graceframework.plugins.unpoly
 
+import groovy.transform.CompileStatic
+
 import grails.plugins.*
 
+/**
+ * Grace Plugin for Unpoly
+ *
+ * @author Michael Yan
+ * @since 0.0.1
+ */
+@CompileStatic
 class UnpolyGrailsPlugin extends Plugin {
 
     def version = '0.5.0-SNAPSHOT'
@@ -48,5 +57,10 @@ Grace Plugin for using Grace app with Unpoly.
 
     // Online location of the plugin's browseable source code.
     def scm = [ url: "https://github.com/grace-plugins/grace-unpoly" ]
+
+    @Override
+    void doWithDynamicMethods() {
+        UnpolyPluginSupport.doWithDynamicMethods()
+    }
 
 }
