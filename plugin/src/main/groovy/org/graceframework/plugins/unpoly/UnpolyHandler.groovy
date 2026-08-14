@@ -15,29 +15,33 @@
  */
 package org.graceframework.plugins.unpoly
 
-import grails.artefact.Controller
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
-import org.grails.web.servlet.mvc.GrailsWebRequest
+import groovy.transform.CompileStatic
 
 /**
- * Helper methods for {@link Controller}.
+ * Delegator to {@link UnpolyRequest} and {@link UnpolyResponse}.
  *
  * @author Michael Yan
  * @since 0.5
  */
-class UnpolyPluginSupport {
+@CompileStatic
+class UnpolyHandler {
 
-    static void doWithDynamicMethods() {
-        // Use `isUnpoly()` to check whether request is Unpoly or not
-        Controller.metaClass.isUnpoly = {
-            GrailsWebRequest webRequest = GrailsWebRequest.lookup()
-            return HttpServletRequestExtension.isUnpoly(webRequest.currentRequest)
-        }
-        // Use `up` to access request headers and set response headers
-        Controller.metaClass.getUp = {
-            UnpolyHandler handler = new UnpolyHandler(delegate.request, delegate.response)
-            return handler
-        }
+    @Delegate
+    UnpolyRequest request
+
+    @Delegate
+    UnpolyResponse response
+
+    UnpolyHandler(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+        this.request = new UnpolyRequest(servletRequest)
+        this.response = new UnpolyResponse(servletResponse)
+    }
+
+    boolean asBoolean() {
+        this.request.asBoolean()
     }
 
 }
