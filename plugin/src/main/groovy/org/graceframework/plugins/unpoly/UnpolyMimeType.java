@@ -31,6 +31,6 @@ public class UnpolyMimeType {
 
     public static final MimeType UNPOLY_FULL = new MimeType("text/html", "unpoly");
 
-    public static final MimeType[] UNPOLY_MIME_TYPES = new MimeType[] { UNPOLY, UNPOLY_FULL };
+    public static final MimeType[] UNPOLY_MIME_TYPES = new MimeType[] { UNPOLY, UNPOLY_FULL, MimeType.HTML };
 
 }
