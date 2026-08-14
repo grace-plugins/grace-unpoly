@@ -1,5 +1,22 @@
 == What's New
 
+=== 0.5.0
+
+View on GitHub: link:{github}/releases/tag/v0.5.0[v0.5.0]
+
+* Release v0.5.0
+* Add release notes for 0.5
+* Update README
+* Build Contact CRUD with Unpoly 3.14 link:{github}/issues/7[#7]
+* Remove isUp() and add getUp() helper method to Controllers link:{github}/issues/6[#6]
+* Use 'html' as the fallback mime type link:{github}/issues/5[#5]
+* Update app to Grace 2022.2.9
+* Add isUp() and isUnpoly() helper methods to all Controllers link:{github}/issues/4[#4]
+* Support withFormat.unpoly in Controller and use 'up' as response format link:{github}/issues/3[#3]
+* Make UnpolyAutoConfiguration order before MimeTypesConfiguration link:{github}/issues/2[#2]
+* Use spring-boot-autoconfigure-processor to generate autoconfigure meta property link:{github}/issues/1[#1]
+* Bump version to 0.5.0-SNAPSHOT
+
 === 0.4.0
 
 View on GitHub: link:{github}/releases/tag/v0.4.0[v0.4.0]
