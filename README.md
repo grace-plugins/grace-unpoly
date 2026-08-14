@@ -59,7 +59,7 @@ request.unpoly.version == request.getHeader('X-UP-Version')
 request.unpoly.target  == request.getHeader('X-UP-Target')
 
 // Check Unpoly request?
-if (request.unpoly as boolean) { // or use request.isUnpoly()
+if (request.unpoly as boolean) { // or request.isUnpoly() // or isUnpoly() 
     template = 'book-detail'
 }
 
@@ -67,6 +67,10 @@ if (request.unpoly as boolean) { // or use request.isUnpoly()
 
 response.unpoly.target = '.content'
 response.unpoly.events = JsonOutput.toJson([["type": "itemDeleted"]])
+
+// And you can just use `up` in controller as below
+up.target = '.content'
+up.events = JsonOutput.toJson([["type": "itemDeleted"]])
 
 ```
 If you use [`respond`](https://grails.github.io/legacy-grails-doc/4.0.0/ref/Controllers/respond.html) method introduced in Grails 2.3. The `respond` method tries to produce the most appropriate response for the requested content type (JSON, XML, HTML etc.)
