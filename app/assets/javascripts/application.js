@@ -7,4 +7,20 @@
 //
 //= require jquery.min
 //= require bootstrap.bundle
+//= require unpoly
+//= require unpoly-bootstrap5
+//= require sweetalert.min
 //= require_self
+
+// Add appropriate bootstrap classes
+up.on('up:layer:opened', function(event, $modal) {
+    if (event.layer.mode !== 'modal') {
+        return;
+    }
+
+    $modal.classList.add('modal', 'show');
+    $modal.style.display = 'block';
+
+    $modal.querySelector('up-modal-box')?.classList.add('modal-dialog');
+    $modal.querySelector('up-modal-content')?.classList.add('modal-content');
+});

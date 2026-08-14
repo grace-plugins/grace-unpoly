@@ -1,3 +1,4 @@
+---
 grails:
     profile: web
     codegen:
@@ -63,6 +64,8 @@ grails:
             html:
               - text/html
               - application/xhtml+xml
+            up:
+              - text/html
             js: text/javascript
             json:
               - application/json
@@ -80,8 +83,6 @@ grails:
     urlmapping:
         cache:
             maxsize: 1000
-    controllers:
-        defaultScope: singleton
     converters:
         encoding: UTF-8
     views:

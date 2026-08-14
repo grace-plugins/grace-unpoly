@@ -9,6 +9,21 @@
 *
 *= require bootstrap
 *= require bootstrap-icons
+*= require unpoly
+*= require unpoly-bootstrap5
 *= require main
 *= require_self
 */
+up-modal {
+    up-modal-box {
+        padding: 0;
+        background: none;
+        border-radius: var(--bs-border-radius-lg);
+    }
+
+    &:has(.modal-header) {
+        up-modal-dismiss {
+            display: none;
+        }
+    }
+}
